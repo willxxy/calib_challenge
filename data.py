@@ -1,3 +1,4 @@
+from tkinter import N
 import numpy as np
 import pandas as pd
 import cv2
@@ -37,16 +38,36 @@ def videos_array(path_to_labeled_videos, path_to_unlabeled_videos):
             unlabeled_list.append(unlabeled_frame)
 
     labeled_array = np.array(labeled_list)
-    print('Shape of labeled arrays: ', labeled_array.shape)
+    # print('Shape of labeled arrays: ', labeled_array.shape)
     unlabeled_array = np.array(unlabeled_list)
-    print('Shape of unlabeled arrays: ', unlabeled_array.shape)
-    
-
+    # print('Shape of unlabeled arrays: ', unlabeled_array.shape)
     return labeled_array, unlabeled_array
 
 
+def load_txt(path_to_txt):
+    pitch_yaw = []
+    pitch = []
+    yaw = []
+    for file in sorted(os.listdir(path_to_txt)):
+        if '.txt' in file:
+            txt = np.loadtxt(f'{path_to_txt}/{file}')
 
+            txt = np.nan_to_num(txt)
+            txt[:,0] = np.nan_to_num(txt[:,0])
+            txt[:,1] = np.nan_to_num(txt[:, 1])
 
+            pitch_yaw.append(txt)
+            pitch.append(txt[:, 0])
+            yaw.append(txt[:, 1])
+
+    pitch_yaw = np.array(pitch_yaw, dtype = 'object')
+    pitch = np.array(pitch, dtype = 'object')
+    yaw = np.array(yaw, dtype = 'object')
+    print('Shape of pitch_yaw arrays: ', pitch_yaw.shape)
+    print('Shape of pitch arrays: ', pitch.shape)
+    print('Shape of yaw arrays: ', yaw.shape)
+
+    return pitch_yaw, pitch, yaw
 
 
 if __name__ == '__main__':
@@ -60,5 +81,10 @@ if __name__ == '__main__':
 
     # --- stacked labeled and unlabeled arrays of all .hevc files 
     labeled_array, unlabeled_array = videos_array('labeled', 'unlabeled')
+
+    # --- load in pitch and yaw angles (radians) from txt files 
+    pitch_yaw, pitch, yaw = load_txt('labeled')
+    
+
 
 
